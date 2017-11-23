@@ -1,5 +1,5 @@
 CC = icc
-CFLAGS = -std=c99 -Wall -fast
+CFLAGS = -std=c99 -Wall -fast -qopenmp 
 LDFLAGS = -lm
 
 jacobi: jacobi.c Makefile
