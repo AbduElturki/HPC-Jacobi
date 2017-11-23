@@ -53,6 +53,7 @@ int run(float *B, float *b, float *x, float *xtmp, float *A_di)
   do
   {
     // Perfom Jacobi iteration
+    #pragma omp for schedule (static)
     for (row = 0; row < N; row++)
     {
       dot = 0.0;
