@@ -47,14 +47,13 @@ int run(float *B, float *b, float *x, float *xtmp, float *A_di)
   float diff;
   float sqdiff;
   float *ptrtmp;
-
   // Loop until converged or maximum iterations reached
   itr = 0;
   do
   {
     // Perfom Jacobi iteration
-    #pragma omp parallel for reduction( + : sqdiff) private(col,row)
-    for (row = 0; row < N; row++)
+    #pragma omp parallel for reduction(+:sqdiff)  private(col,row) 
+   for (row = 0; row < N; row++)
     {
       float dot = 0.0;
       #pragma unroll(4)
@@ -106,9 +105,11 @@ int main(int argc, char *argv[])
 
   // Initialize data
   srand(SEED);
+  float rowsum = 0.0;
+  #pragma omp parallel for private(rowsum)
   for (int row = 0; row < N; row++)
   {
-    float rowsum = 0.0;
+    rowsum = 0.0;
     for (int col = 0; col < N; col++)
     {
       float value = rand()/(double)RAND_MAX;
@@ -134,9 +135,10 @@ int main(int argc, char *argv[])
 
   // Check error of final solution
   float err = 0.0;
+  float tmp = 0.0;
   for (int row = 0; row < N; row++)
   {
-    float tmp = 0.0;
+    tmp = 0.0;
     for (int col = 0; col < N; col++)
     {
       tmp += A[col + row*N] * x[col];
