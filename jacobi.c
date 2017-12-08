@@ -103,10 +103,21 @@ int main(int argc, char *argv[])
 
   double total_start = get_timestamp();
 
+  // First touch
+  #pragma omp parallel for
+  for (int row = 0; row < N; row++){
+   for (int col = 0; col < N; col++){
+    A[col + row*N] = 0;
+    B[col + row*N] = 0;
+   }
+  A_d[row] = 0;
+  b[row] = 0;
+  x[row] = 0.0;
+  }
+
   // Initialize data
   srand(SEED);
   float rowsum = 0.0;
-  #pragma omp parallel for private(rowsum)
   for (int row = 0; row < N; row++)
   {
     rowsum = 0.0;
@@ -127,7 +138,6 @@ int main(int argc, char *argv[])
     b[row] = rand()/(float)RAND_MAX;
     x[row] = 0.0;
   }
-
   // Run Jacobi solver
   double solve_start = get_timestamp();
   int itr = run(B, b, x, xtmp, A_d);
